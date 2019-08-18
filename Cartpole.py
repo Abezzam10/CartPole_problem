@@ -2,6 +2,7 @@
 import gym
 import numpy as np 
 from gym import wrappers
+import ffmpeg
 
 env = gym.make("CartPole-v0")
 
@@ -17,21 +18,21 @@ for i in range(100):
         done = False
         cnt = 0
         observation = env.reset()
-    while not done:
-        #env.render()
-        #takes massive amnt of time when using algos
+        while not done:
+            #env.render()
+            #takes massive amnt of time when using algos
 
-        cnt+= 1
-        action = 1 if np.dot(observation, new_weights) > 0 else 0
-        
-        observation, reward, done, _ = env.step(action)
+            cnt+= 1
+            action = 1 if np.dot(observation, new_weights) > 0 else 0
+            #replacing  random space
+            observation, reward, done, _ = env.step(action)
 
-        if done:
-            break
+            if done:
+                break
         length.append(cnt)
     average_length = float(sum(length)/len(length))
     
-    if average_length < best_length:
+    if average_length > best_length:
         best_length = average_length
         best_weights = new_weights
     episode_lengths.append(average_length)
@@ -40,13 +41,15 @@ for i in range(100):
 
 done = False
 cnt = 0
-env =  wrappers.Monitor(env, 'Pyfiles', force=True)
+env = wrappers.Monitor(env, 'voed', force=True)
 observation = env.reset()
 while not done:
     cnt+= 1
     action = 1 if np.dot(observation, best_weights) > 0 else 0
-    
     observation, reward, done, _ = env.step(action) 
+
+    if done:
+        break
 
 
 print('with best wieights', cnt, 'moves')
